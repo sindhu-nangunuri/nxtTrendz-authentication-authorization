@@ -7,6 +7,8 @@ class LoginForm extends Component {
   state = {
     username: '',
     password: '',
+    showSubmitError: false,
+    errorMsg: '',
   }
 
   onSubmitSuccess = () => {
@@ -14,10 +16,14 @@ class LoginForm extends Component {
     history.replace('/')
   }
 
+  onSubmitFailure = errorMsg => {
+    this.setState({showSubmitError: true, errorMsg})
+  }
+
   submitForm = async event => {
     event.preventDefault()
     const {username, password} = this.state
-    const {userDetails} = {username, password}
+    const userDetails = {username, password}
     const url = 'https://apis.ccbp.in/login'
     const options = {
       method: 'POST',
@@ -29,6 +35,8 @@ class LoginForm extends Component {
     console.log(response)
     if (response.ok === true) {
       this.onSubmitSuccess()
+    } else {
+      this.onSubmitFailure(data.error_msg)
     }
   }
 
@@ -79,6 +87,7 @@ class LoginForm extends Component {
   }
 
   render() {
+    const {showSubmitError, errorMsg} = this.state
     return (
       <div className="login-form-container">
         <img
@@ -102,6 +111,7 @@ class LoginForm extends Component {
           <button type="submit" className="login-button">
             Login
           </button>
+          {showSubmitError && <p className="error-message">*{errorMsg}</p>}
         </form>
       </div>
     )
